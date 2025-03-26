@@ -42,7 +42,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/sterling";
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://vasanth2004vk:4roHrNRl9A0TGB5s@apple-db.hsjsh.mongodb.net/sterling?retryWrites=true&w=majority&appName=apple-db";
 
 const app = express();
 app.use(bodyParser.json());
@@ -79,7 +79,7 @@ app.post('/login',async (req,res)=>{
 
 });
 app.get("/", (req, res) => {
-    res.send("<h1>Server is Running Successfully!</h1>");
+    res.send("<h1>Server is Running !</h1>");
 });
 
 const PORT = process.env.PORT || 8080;
