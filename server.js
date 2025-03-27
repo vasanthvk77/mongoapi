@@ -38,52 +38,64 @@
 //     console.log(`Server running on port ${PORT}`);
 // });
 
+const { MongoClient } = require("mongodb");
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
-const bodyParser = require("body-parser");
-const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://vasanth2004vk:4roHrNRl9A0TGB5s@apple-db.hsjsh.mongodb.net/sterling?retryWrites=true&w=majority&appName=apple-db";
 
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cors());
 
-mongoose.connect(MONGO_URI).then(()=>console.log("connection success")).catch(err=>console.error("database connection error:",err));
+const MONGO_URI = "mongodb+srv://vasanth2004vk:4roHrNRl9A0TGB5s@apple-db.hsjsh.mongodb.net/?retryWrites=true&w=majority&appName=apple-db";
+const client = new MongoClient(MONGO_URI);
 
-const admin_schema = new mongoose.Schema({
-    user_name:String,
-    password:String,
-})
-
-const admin = mongoose.model('admin',admin_schema);
-
-app.post('/login',async (req,res)=>{
-    try{
-        const{user,pass}=req.body;
-        //const newLogin = new admin({}) insert method
-        // const uname = admin.find({},{user_name:1,_id:0});
-        // const upassword = admin.find({},{user_name:1,_id:0});
-        const user_credential = await admin.findOne({user_name:user,password:pass});
-        if(user_credential)
-        {
-            res.json({status:true,message:"Login Success"});
-        }
-        else
-        {
-            res.json({status:false,message:"Invalid Credential"});
-        }
+async function connectDB() {
+    try {
+        await client.connect();
+        console.log("✅ Connected to MongoDB");
+    } catch (error) {
+        console.error("🔥 Database connection error:", error);
     }
-    catch (error) {
-        res.status(500).json({ status:false, message: "Server error" });
-    }
+}
+connectDB();
 
+const db = client.db("sterling"); // Change this if your database is different
+const adminCollection = db.collection("admin"); // Reference the 'admin' collection
+
+// 🔹 Login Route Using MongoDB Native Driver
+app.post("/login", async (req, res) => {
+    const { user, pass } = req.body;
+    console.log("🔵 Received login request:", req.body);
+
+    try {
+        console.log("📂 Searching in Collection: admin");
+        const admin = await adminCollection.findOne({ user_name: user });
+
+        if (!admin) {
+            console.log("❌ User not found");
+            return res.json({ status: false, message: "❌ User not found" });
+        }
+
+        if (admin.password === pass) {
+            console.log("✅ Login successful");
+            return res.json({ status: true, message: "✅ Login Success" });
+        } else {
+            console.log("❌ Incorrect password");
+            return res.json({ status: false, message: "❌ Invalid Credential" });
+        }
+    } catch (error) {
+        console.error("🔥 Server error:", error);
+        res.status(500).json({ status: false, message: "🔥 Internal Server Error" });
+    }
+    
 });
 app.get("/", (req, res) => {
-    res.send("<h1>Server is Running !</h1>");
+    res.send("<h1>✅ Server is Running!</h1>");
 });
 
-const PORT = process.env.PORT || 8080;
+// Start Server
+const PORT = 8080;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
 
