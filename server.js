@@ -44,7 +44,7 @@ const cors = require("cors");
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: "*", methods: ["POST", "GET"], allowedHeaders: ["Content-Type"] }));
 
 const MONGO_URI = "mongodb+srv://vasanth2004vk:4roHrNRl9A0TGB5s@apple-db.hsjsh.mongodb.net/?retryWrites=true&w=majority&appName=apple-db";
 const client = new MongoClient(MONGO_URI);
@@ -90,7 +90,7 @@ app.post("/login", async (req, res) => {
     
 });
 app.get("/", (req, res) => {
-    res.send("<h1>✅ Server is Running!</h1>");
+    res.send("<h1>Server is Running</h1>");
 });
 
 // Start Server
