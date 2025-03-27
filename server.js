@@ -52,9 +52,9 @@ const client = new MongoClient(MONGO_URI);
 async function connectDB() {
     try {
         await client.connect();
-        console.log("✅ Connected to MongoDB");
+        console.log("Connected to MongoDB");
     } catch (error) {
-        console.error("🔥 Database connection error:", error);
+        console.error("Database connection error:", error);
     }
 }
 connectDB();
@@ -65,27 +65,27 @@ const adminCollection = db.collection("admin"); // Reference the 'admin' collect
 // 🔹 Login Route Using MongoDB Native Driver
 app.post("/login", async (req, res) => {
     const { user, pass } = req.body;
-    console.log("🔵 Received login request:", req.body);
+    console.log("Received login request:", req.body);
 
     try {
-        console.log("📂 Searching in Collection: admin");
+        console.log("Searching in Collection: admin");
         const admin = await adminCollection.findOne({ user_name: user });
 
         if (!admin) {
-            console.log("❌ User not found");
-            return res.json({ status: false, message: "❌ User not found" });
+            console.log("User not found");
+            return res.json({ status: false, message: "Invalid Username or Password" });
         }
 
         if (admin.password === pass) {
-            console.log("✅ Login successful");
-            return res.json({ status: true, message: "✅ Login Success" });
+            console.log("Login successful");
+            return res.json({ status: true, message: "Login Success" });
         } else {
-            console.log("❌ Incorrect password");
-            return res.json({ status: false, message: "❌ Invalid Credential" });
+            console.log("Incorrect password");
+            return res.json({ status: false, message: "Invalid Credential" });
         }
     } catch (error) {
-        console.error("🔥 Server error:", error);
-        res.status(500).json({ status: false, message: "🔥 Internal Server Error" });
+        console.error("Server error:", error);
+        res.status(500).json({ status: false, message: "Internal Server Error" });
     }
     
 });
