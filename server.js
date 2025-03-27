@@ -90,7 +90,7 @@ app.post("/login", async (req, res) => {
     
 });
 app.get("/", (req, res) => {
-    res.send("<h1>Server is Running</h1>");
+    res.send("<h1>Server</h1>");
 });
 
 // Start Server
