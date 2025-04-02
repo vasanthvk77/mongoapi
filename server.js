@@ -61,6 +61,7 @@ connectDB();
 
 const db = client.db("sterling"); // Change this if your database is different
 const adminCollection = db.collection("admin"); // Reference the 'admin' collection
+const storeCollection = db.collection("store"); // Reference the 'store' collection
 
 // 🔹 Login Route Using MongoDB Native Driver
 app.post("/login", async (req, res) => {
@@ -89,8 +90,32 @@ app.post("/login", async (req, res) => {
     }
     
 });
+
+app.post("/search", async (req, res) => {
+    const { query } = req.body;
+
+    console.log(`🔎 Searching for: ${query}`);
+
+    try {
+        const products = await storeCollection
+            .find({ product_name: { $regex: query, $options: "i" } }) // Case-insensitive search
+            .toArray();
+
+        if (products.length === 0) {
+            console.log("❌ No products found");
+            return res.json({ status: false, message: "❌ No products found" });
+        }
+
+        console.log("✅ Products found:", products);
+        res.json({ status: true, products });
+    } catch (error) {
+        console.error("🔥 Server error:", error);
+        res.status(500).json({ status: false, message: "🔥 Internal Server Error" });
+    }
+});
+
 app.get("/", (req, res) => {
-    res.send("<h1>Server</h1>");
+    res.send("<h1>server is running vasanth</h1>");
 });
 
 // Start Server
