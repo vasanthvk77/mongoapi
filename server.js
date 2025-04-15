@@ -66,7 +66,7 @@ app.post('/sales', async (req, res) => {
       return res.status(400).json({ error: 'Invalid sales data' });
     }
 
-    await sales.insertOne(salesData);
+    await salesCollection.insertOne(salesData);
     res.status(200).json({ message: 'Sales data saved successfully' });
   } catch (error) {
     console.error('Error saving data:', error);
