@@ -56,24 +56,30 @@ app.post("/login", async (req, res) => {
     
 });
 
+app.post("/sales", async (req, res) => {
+  const salesData = req.body;
+  console.log("📥 Received salesData:", JSON.stringify(salesData, null, 2));
 
-app.post('/sales', async (req, res) => {
   try {
-    const salesData = req.body;
-    console.log('Received:', salesData);
-
-    if (!salesData.customer || !salesData.date || !salesData.time || !salesData.products) {
-      return res.status(400).json({ error: 'Invalid sales data' });
+    // Validation
+    if (!salesData.customer || !salesData.date || !salesData.time || !Array.isArray(salesData.products)) {
+      return res.status(400).json({ error: "Invalid sales data" });
     }
 
-    await salesCollection.insertOne(salesData);
-    res.status(200).json({ message: 'Sales data saved successfully' });
+    if (salesData.products.length === 0 || salesData.products.some(p => !p.product_name || !p.price)) {
+      return res.status(400).json({ error: "Empty or invalid product entries" });
+    }
+
+    // Insert into collection
+    const result = await salesCollection.insertOne(salesData);
+    console.log("✅ Inserted ID:", result.insertedId);
+
+    res.status(200).json({ message: "Sales data saved successfully", id: result.insertedId });
   } catch (error) {
-    console.error('Error saving data:', error);
-    res.status(500).json({ error: 'Failed to save sales data' });
+    console.error("❌ Error saving sales data:", error);
+    res.status(500).json({ error: "Failed to save sales data" });
   }
 });
-
 
 
 app.post("/search", async (req, res) => {
